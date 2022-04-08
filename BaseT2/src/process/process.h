@@ -25,7 +25,9 @@ struct process {
     int turnAroundTime; // (T_salida - startTime ?)
     int responseTime; // (1st cpuChoice_time  - startime)
     int waitingTime; // (ciclos_READY + ciclos_WAITING) (B_i)
-    int cyclesLeft;
+    int cyclesLeft; //(cycles - cpucounter)
+    int sCounter; // lleva el numero de ciclos de envejecimiento.
+    int waitCounter; // cuenta la cantidad de ciclos del wait actual
 
 };
 

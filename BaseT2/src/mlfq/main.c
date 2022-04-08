@@ -23,6 +23,8 @@ int main(int argc, char const *argv[])
 	List* fifo2 = listInit(0, 1, Q);
 	List* sjf = listInit(1, 0, Q);
 
+	
+
 	char name[10];
 	int processInfo[6];
 	for (int i = 0; i < input_file->len; ++i)
@@ -45,6 +47,35 @@ int main(int argc, char const *argv[])
 		insertSortbyStartTime(entryOrder, new);
 	}
 	showList(entryOrder);
+
+	int cycleCounter = 0;
+	Process* processInCPU;
+	
+	while (fifo1 -> head || fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU) {
+		// Revisar si hay nuevos procesos entrando a la cola
+			// Todos los procesos empiezan en estado ready. En fifo1 supongo
+		while (cycleCounter <= entryOrder -> head -> startTime) {
+			printf( "Entrando PID = %d | startTime = %d \n", entryOrder -> head -> pid, entryOrder -> head -> startTime);
+			addProcess(fifo1, entryOrder -> head -> startTime);
+			eraseHead(entryOrder);
+		}
+		
+		
+		//Iterar sobre las 3 colas
+			// Actualizar S de procesos en colas no prioritarias.
+				// El S se actualiza independiente de lo que pase? o desde que el proceso sale de la cola mas prioritaria
+			
+			// Si corresponde, pasar procesos en estado WAIT a Ready
+
+		// Si hay un proceso en CPU revisarlo y actualizar valores.
+			//  Hay que saber desde que cola llego a ejecutarse para saber que hacer.
+			// Revisar si cede la CPU. -> Se aumenta su prioridad. Si ya estaba en fifo1 se mantiene
+			// Revisar si se acaba su quantum. -> Se baja de prioridad
+
+		// Si no hay proceso en CPU, asignar un proceso a ejecutar segun prioridad.
+			// Se reincia quantum. Si es que aplica y en funcion de que cola venia.
+		cycleCounter++;
+	}
 
 	input_file_destroy(input_file);
 }

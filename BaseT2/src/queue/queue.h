@@ -9,16 +9,17 @@ struct queue {
     int quantum;  // será == 0 en Queue SJF
 
     int len;
-    Process *head;
-    Process *tail;
+    Process* head;
+    Process* tail;
 };
 
 
 
 List* listInit(int tipo, int prioridad, int Q);
-void addProcess(List* lista, Process* nuevo);
+void addProcess(List* list, Process* new);
 Process* getProcess(List* list, int pid);
 void eraseTail(List* list);
+void eraseHead(List* list);
 
 void insertSortbyStartTime(List* list, Process* nodo);
 void insertSortbyCyclesLeft(List* list, Process* nodo);
