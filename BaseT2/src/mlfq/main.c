@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
 
 	
 
-	char name[10];
+	char name[10] = "";
 	int processInfo[6];
 	for (int i = 0; i < input_file->len; ++i)
 	{
@@ -45,21 +45,29 @@ int main(int argc, char const *argv[])
 			}
 		}
 		printf("\n");
-		Process* new = processInit(*name, processInfo[0], processInfo[1], processInfo[2], processInfo[3], processInfo[4], processInfo[5]);
+		Process* new = processInit(name, processInfo[0], processInfo[1], processInfo[2], processInfo[3], processInfo[4], processInfo[5]);
 		insertSortbyStartTime(entryOrder, new);
 	}
 
+	// char subName;
+	// strcpy(&subName, entryOrder -> head -> name); 
+	// printf("NOMBRE == %c", subName);
 	int cycleCounter = 0;
-	Process* processInCPU;
+	Process* processInCPU = NULL;
 
 	while (fifo1 -> head || fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU != NULL) {
 		printf("\nCiclo: %d\n", cycleCounter);
 
-		if (processInCPU) {
+		if (processInCPU != NULL) {
+			processInCPU -> sCounter ++;
 			processInCPU -> cpuCounter++;
 			processInCPU -> actualCpuCounter++;
+			checkSFlag(processInCPU);
 			if (processInCPU -> cpuCounter >= processInCPU -> cycles){
 				printf("Proceso %d termino \n", processInCPU -> pid);
+				processInCPU -> turnAroundTime = (cycleCounter - 1 - processInCPU -> startTime); 
+				processInCPU -> waitingTime = (processInCPU -> turnAroundTime) - (processInCPU ->cpuCounter);
+				processInCPU -> cpuInterruptions ++; 
 				addProcess(finishedProcesses, processInCPU);
 				processInCPU = NULL; 
 			}
@@ -67,21 +75,39 @@ int main(int argc, char const *argv[])
 				printf("Proceso %d cede CPU \n", processInCPU -> pid);
 				processInCPU -> state = 2;
 				processInCPU -> waitCounter = 0;
+				processInCPU -> cpuInterruptions ++; 
 				if (processInCPU -> priority == 0 || processInCPU -> priority == 1) {
 					addProcess(fifo1, processInCPU);
 				}
 				else {
-					addProcess(fifo2, processInCPU);
+					if (processInCPU -> sFlag){
+						addProcess(fifo1, processInCPU);
+						processInCPU -> sFlag = 0;
+						processInCPU -> sCounter = processInCPU -> extraScounter;
+						processInCPU -> extraScounter = 0;
+					}
+					else {
+						addProcess(fifo2, processInCPU);
+					}
 				}
 				processInCPU = NULL;
 			}
 			else if (excedesQuantum(processInCPU, Q) == 1){
 				printf("Proceso %d excedio su Quantum \n", processInCPU -> pid);
+				processInCPU -> cpuInterruptions ++; 
 				if (processInCPU -> priority == 0) {
 					addProcess(fifo2, processInCPU);
 				}
 				else {
-					addProcess(sjf, processInCPU);
+					if (processInCPU -> sFlag){
+						addProcess(fifo1, processInCPU);
+						processInCPU -> sFlag = 0;
+						processInCPU -> sCounter = processInCPU -> extraScounter;
+						processInCPU -> extraScounter = 0;
+					}
+					else {
+						addProcess(sjf, processInCPU);
+					}
 				}
 				processInCPU = NULL;
 			}
@@ -93,32 +119,34 @@ int main(int argc, char const *argv[])
 	 		addProcess(fifo1, enteringProcess);
 		}
 		
-		updateProcesses(fifo1);
-		updateProcesses(fifo2);
-		updateProcesses(sjf);
+		updateProcesses(fifo1 , fifo1);
+		updateProcesses(fifo2, fifo1);
+		updateProcesses(sjf, fifo1);
+
 
 		if (!processInCPU) {
 			printf("No hay proceso\n");
 			processInCPU = processReadyForExecution(fifo1);
-			if (!processInCPU) {
+			if (processInCPU == NULL) {
 				processInCPU = processReadyForExecution(fifo2);
 			}
-			if (!processInCPU) {
+			if (processInCPU == NULL) {
 				processInCPU = processReadyForExecution(sjf);
 			}
-			if (!processInCPU) {
+			if (processInCPU == NULL) {
 				printf("No hay proceso para ejecutar");
 			}
 			if (processInCPU != NULL) {
+				if (!processInCPU -> cpuChoice){
+					processInCPU -> responseTime = (cycleCounter +1) - (processInCPU -> startTime);
+				}
 				processInCPU -> cpuChoice ++;
 				processInCPU -> actualCpuCounter = 0;
 				printf("Entra proceso desde lista %d\n", processInCPU -> priority);
 			}
-		}
-		
-		
-		
+		}	
 		cycleCounter++;
+		
 	}
 		
 	/* 
@@ -138,7 +166,7 @@ int main(int argc, char const *argv[])
 		Se reincia quantum. Si es que aplica y en funcion de que cola venia. DONE
 	*/
 	
-	char sentence[1000];
+	//char sentence[1000];
 
     // creating file pointer to work with files
     FILE *fptr;
@@ -151,9 +179,14 @@ int main(int argc, char const *argv[])
         printf("Error!");
         exit(1);
     }
-    
+    int counter = 0;
 	for(Process *process = finishedProcesses -> head; process; process = process -> next){
-		fprintf(fptr, "%s,%d,%d,%d\n", process->name, process->cpuChoice, process->cpuInterruptions, process->turnAroundTime);
+		printf("(%d)\n", counter);
+		counter++;
+		fprintf(fptr, "%s,%d,%d,%d,%d,%d\n", process->name, process->cpuChoice,
+		 process->cpuInterruptions, process->turnAroundTime, process->responseTime, process->waitingTime);
+		printf("%s, %d, %d, %d , %d, %d\n", process->name, process->cpuChoice,
+		process->cpuInterruptions, process->turnAroundTime, process->responseTime, process->waitingTime);
 	}
 	fclose(fptr);
 	input_file_destroy(input_file);

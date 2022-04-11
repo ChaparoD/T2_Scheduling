@@ -194,7 +194,7 @@ void showList(List* list){
   }
 }
 
-void updateProcesses(List* list){
+void updateProcesses(List* list, List* fifo1 ){
   for(Process* process = list -> head; process  ; process = process -> next){
         process -> sCounter++;
         if (process -> state == 2) {
@@ -203,6 +203,14 @@ void updateProcesses(List* list){
         if (process -> waitCounter > process -> waitingDelay) {
           process -> state = 0;
           process -> waitCounter = 0;
+        }
+        if (list -> priority != 0 && (process -> sCounter) % (process -> S) == 0){
+          Process* newPriority = process;
+          removeProcess(list, process);
+          addProcess(fifo1, newPriority);
+          process -> sCounter =0;
+          // Agregarlo siempre a fifo1
+          //remove de la lista actual 
         }
   }
 
@@ -213,7 +221,7 @@ Process* processReadyForExecution(List* list) {
 
   for(Process *process = list -> head; process; process = process -> next){
     if (process -> state == 0) {
-      process -> priority = list -> priority;
+      process -> priority = list -> priority; //al momento de ejecutarse en CPU, guardo de dde viene
       removeProcess(list, process);
       return process;
     }

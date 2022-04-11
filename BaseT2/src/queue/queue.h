@@ -23,7 +23,7 @@ void eraseHead(List* list);
 
 Process* processReadyForExecution(List* list);
 void removeProcess(List* list, Process* process);
-void updateProcesses(List* list);
+void updateProcesses(List* list, List* fifo1);
 
 void insertSortbyStartTime(List* list, Process* nodo);
 void insertSortbyCyclesLeft(List* list, Process* nodo);
