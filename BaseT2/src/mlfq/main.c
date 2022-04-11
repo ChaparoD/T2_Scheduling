@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 	printf("Cantidad de procesos: %d\n", input_file->len);
 	printf("Procesos:\n");
 	//Crando colas
-	int Q = atoi(argv[2]);
+	int Q = atoi(argv[3]);
 	printf("Q = %d\n", Q );
 	List* entryOrder = listInit(0, 0, Q); // Lista que almacena por startTime
 	List* fifo1 = listInit(0, 2, Q);
