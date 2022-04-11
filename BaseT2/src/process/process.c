@@ -12,7 +12,6 @@ Process* processInit(char nombre, int pid, int TIEMPO_INICIO, int CYCLES, int WA
     new -> waitingDelay = WATING_DELAY;
     new -> S = S;
   
-
   return new;
 }
 

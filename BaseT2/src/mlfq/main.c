@@ -47,15 +47,7 @@ int main(int argc, char const *argv[])
 		Process* new = processInit(*name, processInfo[0], processInfo[1], processInfo[2], processInfo[3], processInfo[4], processInfo[5]);
 		insertSortbyStartTime(entryOrder, new);
 	}
-	showList(entryOrder);
-	while (entryOrder -> head){
-		Process *enteringProcess = entryOrder -> head;
-		eraseHead(entryOrder);
-		addProcess(sjf, enteringProcess);
-	}
-	showList(sjf);
-	
-	return 0;
+
 	int cycleCounter = 0;
 	Process* processInCPU;
 
@@ -86,11 +78,13 @@ int main(int argc, char const *argv[])
 			}
 			if (processInCPU != NULL) {
 				processInCPU -> cpuChoice ++;
-				printf("Entra proceso\n");
+				processInCPU -> actualCpuCounter = 0;
+				printf("Entra proceso desde lista %d\n", processInCPU -> priority);
 			}
 		}
 		if (processInCPU) {
 			processInCPU -> cpuCounter++;
+			processInCPU -> actualCpuCounter++;
 			if (processInCPU -> cpuCounter >= processInCPU -> cycles){
 				printf("Proceso %d termino \n", processInCPU -> pid);
 				addProcess(finishedProcesses, processInCPU);
@@ -105,6 +99,16 @@ int main(int argc, char const *argv[])
 				}
 				else {
 					addProcess(fifo2, processInCPU);
+				}
+				processInCPU = NULL;
+			}
+			else if (excedesQuantum(processInCPU, Q) == 1){
+				printf("Proceso %d excedio su Quantum \n", processInCPU -> pid);
+				if (processInCPU -> priority == 0) {
+					addProcess(fifo2, processInCPU);
+				}
+				else {
+					addProcess(sjf, processInCPU);
 				}
 				processInCPU = NULL;
 			}

@@ -21,6 +21,7 @@ struct process {
 
     int cpuChoice; //numero de veces que fue elegido x CPU
     int cpuCounter; //numero de ciclos trabajados en CPU (A_i)
+    int actualCpuCounter; //numero de ciclos trabajados en CPU desde que entro a CPU
     int cpuInterruptions;  // numero de veces interrumpido x CPU (scheduler retira de CPU)
     int turnAroundTime; // (T_salida - startTime ?)
     int responseTime; // (1st cpuChoice_time  - startime)

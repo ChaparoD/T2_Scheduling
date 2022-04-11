@@ -220,3 +220,17 @@ Process* processReadyForExecution(List* list) {
   }
   return NULL;
 }
+
+int excedesQuantum(Process* process, int Q){
+  if (process -> priority == 0) {
+    if (process -> actualCpuCounter >= 2*Q) {
+      return 1;
+    }
+  }
+  else if (process -> priority == 1){
+    if (process -> actualCpuCounter >= Q) {
+      return 1;
+    }
+  }
+  return 0;
+}
