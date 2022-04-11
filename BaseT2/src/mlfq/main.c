@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
 	printf("Procesos:\n");
 	//Crando colas
 	int Q = atoi(argv[2]);
-	printf("Q = %d\n", Q);
+	printf("Q = %d\n", Q );
 	List* entryOrder = listInit(0, 0, Q); // Lista que almacena por startTime
 	List* fifo1 = listInit(0, 2, Q);
 	List* fifo2 = listInit(0, 1, Q);
@@ -47,35 +47,48 @@ int main(int argc, char const *argv[])
 		insertSortbyStartTime(entryOrder, new);
 	}
 	showList(entryOrder);
+	eraseHead(entryOrder);
+	printf("Borrando head 1\n");
+	showList(entryOrder);
+	eraseHead(entryOrder);
+	printf("Borrando head 2\n");
+
+	showList(entryOrder);
+	eraseHead(entryOrder);
+	printf("Borrando head 3\n");
+
+	showList(entryOrder);
+
 
 	int cycleCounter = 0;
 	Process* processInCPU;
 	
-	while (fifo1 -> head || fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU) {
-		// Revisar si hay nuevos procesos entrando a la cola
-			// Todos los procesos empiezan en estado ready. En fifo1 supongo
-		while (cycleCounter <= entryOrder -> head -> startTime) {
-			printf( "Entrando PID = %d | startTime = %d \n", entryOrder -> head -> pid, entryOrder -> head -> startTime);
-			addProcess(fifo1, entryOrder -> head -> startTime);
-			eraseHead(entryOrder);
-		}
+	// while (fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU) {
+	// 	// Revisar si hay nuevos procesos entrando a la cola
+	// 		// Todos los procesos empiezan en estado ready. En fifo1 supongo
+	// 	while (cycleCounter <= entryOrder -> head -> startTime) {
+
+	// 		printf( "Entrando PID = %d | startTime = %d \n", entryOrder -> head -> pid, entryOrder -> head -> startTime);
+	// 		addProcess(fifo1, entryOrder -> head);
+	// 		eraseHead(entryOrder);
+	// 	}
 		
 		
-		//Iterar sobre las 3 colas
-			// Actualizar S de procesos en colas no prioritarias.
-				// El S se actualiza independiente de lo que pase? o desde que el proceso sale de la cola mas prioritaria
+	// 	//Iterar sobre las 3 colas
+	// 		// Actualizar S de procesos en colas no prioritarias.
+	// 			// El S se actualiza independiente de lo que pase? o desde que el proceso sale de la cola mas prioritaria
 			
-			// Si corresponde, pasar procesos en estado WAIT a Ready
+	// 		// Si corresponde, pasar procesos en estado WAIT a Ready
 
-		// Si hay un proceso en CPU revisarlo y actualizar valores.
-			//  Hay que saber desde que cola llego a ejecutarse para saber que hacer.
-			// Revisar si cede la CPU. -> Se aumenta su prioridad. Si ya estaba en fifo1 se mantiene
-			// Revisar si se acaba su quantum. -> Se baja de prioridad
+	// 	// Si hay un proceso en CPU revisarlo y actualizar valores.
+	// 		//  Hay que saber desde que cola llego a ejecutarse para saber que hacer.
+	// 		// Revisar si cede la CPU. -> Se aumenta su prioridad. Si ya estaba en fifo1 se mantiene
+	// 		// Revisar si se acaba su quantum. -> Se baja de prioridad
 
-		// Si no hay proceso en CPU, asignar un proceso a ejecutar segun prioridad.
-			// Se reincia quantum. Si es que aplica y en funcion de que cola venia.
-		cycleCounter++;
-	}
+	// 	// Si no hay proceso en CPU, asignar un proceso a ejecutar segun prioridad.
+	// 		// Se reincia quantum. Si es que aplica y en funcion de que cola venia.
+	// 	cycleCounter++;
+	// }
 
 	input_file_destroy(input_file);
 }

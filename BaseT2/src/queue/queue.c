@@ -17,6 +17,9 @@ List* listInit(int tipo, int prioridad, int Q)
 
 
 void addProcess(List* list, Process* new){
+    new -> next = NULL;
+    new -> prev = NULL;
+    list -> len++;
     printf("(%d)\n", new->pid); //ACA SE CAE , NO DETECTA EL PROCESO.
     //si es SJF insertamos ; type = 1
     if (list -> type){
@@ -26,7 +29,7 @@ void addProcess(List* list, Process* new){
     else{
       printf("FIFO\n");
       
-      if (list -> len == 0) {
+      if (!list -> head) {
         list -> head = new;
         printf("HEAD\n");
       }
@@ -39,7 +42,6 @@ void addProcess(List* list, Process* new){
     list -> tail = new;
     }
   showList(list);
-  list -> len++;
 }
 
 Process* getProcess(List* list, int pid){
@@ -75,6 +77,8 @@ void eraseHead(List* list){
     list -> head = NULL;
     list -> tail = NULL;
   }
+  list -> len--;
+
 }
 
 void insertSortbyStartTime(List* list, Process* new){
@@ -164,11 +168,23 @@ void insertSortbyCyclesLeft(List* list, Process* new){
 }
 
 void showList(List* list){
-  printf("Imprimiendo cola Largo = %d Headpid = %d \n", list ->len, list -> head -> pid);
-
-  for(Process* nodo = list->head; nodo  ; nodo = nodo -> next){
-    printf( "pid = %d | startTime = %d \n", nodo->pid, nodo->startTime);
+  Process* nodo;
+  if (list -> len){
+    printf("Imprimiendo cola Largo = %d Headpid = %d \n", list ->len, list -> head -> pid);
+    nodo = list->head;
   }
+  // for(Process* nodo = list->head; nodo  ; nodo = nodo -> next){
+  //   printf( "pid = %d | startTime = %d \n", nodo->pid, nodo->startTime);
+  // }
+  
+  for(int i = 0; i < list -> len ; i++){
+    printf( "pid = %d | startTime = %d \n", nodo->pid, nodo->startTime);
+    if (nodo -> next){
+      nodo = nodo ->next;
+    }
+  }
+ 
+  printf("Listo\n");
 }
 
 void updateList(List* fifo1, List* fifo2, List* sjf){
