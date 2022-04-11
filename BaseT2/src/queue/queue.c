@@ -20,28 +20,23 @@ void addProcess(List* list, Process* new){
     new -> next = NULL;
     new -> prev = NULL;
     list -> len++;
-    printf("(%d)\n", new->pid); //ACA SE CAE , NO DETECTA EL PROCESO.
     //si es SJF insertamos ; type = 1
     if (list -> type){
       insertSortbyCyclesLeft(list, new);
     }
     //FIFO, agregamos al final.
     else{
-      printf("FIFO\n");
       
       if (!list -> head) {
         list -> head = new;
-        printf("HEAD\n");
       }
       else {
-        printf("TAIL\n");
         list -> tail -> next = new;
         new -> prev = list -> tail;
       }
     //printf("agregado el estrecho con id = %i al padre %i\n", person -> id, person ->parent ->id);
     list -> tail = new;
     }
-  showList(list);
 }
 
 Process* getProcess(List* list, int pid){
@@ -51,6 +46,30 @@ Process* getProcess(List* list, int pid){
     }
   }
   return NULL;
+}
+
+void removeProcess(List* list, Process* process){
+    if (process -> prev && process -> next) {
+      process -> next -> prev = process -> prev;
+      process -> prev -> next = process -> next;
+    }
+    else if (process -> next) {
+      // es head
+      list -> head = process -> next;
+      list -> head -> prev = NULL;
+    }
+    else if (process -> prev) {
+      // es la cola
+      list -> tail = process -> prev;
+      list -> tail -> next = NULL;
+    }
+    else {
+      // es el unico proceso
+      list -> head = NULL;
+      list -> tail = NULL;
+    }
+    process -> next = NULL;
+    process -> prev = NULL;
 }
 
 void eraseTail(List* list){
@@ -168,23 +187,11 @@ void insertSortbyCyclesLeft(List* list, Process* new){
 }
 
 void showList(List* list){
-  Process* nodo;
-  if (list -> len){
-    printf("Imprimiendo cola Largo = %d Headpid = %d \n", list ->len, list -> head -> pid);
-    nodo = list->head;
+
+  printf("Imprimiendo Lista \n");
+  for(Process *process = list -> head; process; process = process -> next){
+    printf( "pid = %d | startTime = %d \n", process->pid, process->startTime);
   }
-  // for(Process* nodo = list->head; nodo  ; nodo = nodo -> next){
-  //   printf( "pid = %d | startTime = %d \n", nodo->pid, nodo->startTime);
-  // }
-  
-  for(int i = 0; i < list -> len ; i++){
-    printf( "pid = %d | startTime = %d \n", nodo->pid, nodo->startTime);
-    if (nodo -> next){
-      nodo = nodo ->next;
-    }
-  }
- 
-  printf("Listo\n");
 }
 
 void updateList(List* fifo1, List* fifo2, List* sjf){
@@ -196,3 +203,13 @@ void updateList(List* fifo1, List* fifo2, List* sjf){
 
 }
 
+Process* processReadyForExecution(List* list) {
+
+  for(Process *process = list -> head; process; process = process -> next){
+    if (process -> state == 0) {
+      removeProcess(list, process);
+      return process;
+    }
+  }
+  return NULL;
+}

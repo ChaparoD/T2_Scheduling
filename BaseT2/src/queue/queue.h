@@ -21,7 +21,12 @@ Process* getProcess(List* list, int pid);
 void eraseTail(List* list);
 void eraseHead(List* list);
 
+Process* processReadyForExecution(List* list);
+void removeProcess(List* list, Process* process);
+
 void insertSortbyStartTime(List* list, Process* nodo);
 void insertSortbyCyclesLeft(List* list, Process* nodo);
 void showList(List* list);
+
+
   
