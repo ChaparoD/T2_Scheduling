@@ -23,8 +23,10 @@ Process* processInit(char* nombre, int pid, int TIEMPO_INICIO, int CYCLES, int W
 void checkSFlag(Process* check){
   if (check -> sFlag){
     check -> extraScounter++;
+    printf("CONTANDO extraScounter\n");
   }
   if ((check-> sCounter) % (check -> S) == 0){
+    printf("ENVEJECIMIENTO CUMPLIDO EN CPU\n");
     check -> sFlag =1;
   }
   

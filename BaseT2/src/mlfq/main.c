@@ -85,6 +85,8 @@ int main(int argc, char const *argv[])
 						processInCPU -> sFlag = 0;
 						processInCPU -> sCounter = processInCPU -> extraScounter;
 						processInCPU -> extraScounter = 0;
+						printf("S Flag durante CPU (salida x wait)\n");
+
 					}
 					else {
 						addProcess(fifo2, processInCPU);
@@ -104,6 +106,7 @@ int main(int argc, char const *argv[])
 						processInCPU -> sFlag = 0;
 						processInCPU -> sCounter = processInCPU -> extraScounter;
 						processInCPU -> extraScounter = 0;
+						printf("S Flag durante CPU (salida quantum)\n");
 					}
 					else {
 						addProcess(sjf, processInCPU);
@@ -189,5 +192,23 @@ int main(int argc, char const *argv[])
 		process->cpuInterruptions, process->turnAroundTime, process->responseTime, process->waitingTime);
 	}
 	fclose(fptr);
+
+	if (finishedProcesses -> head) {
+		Process* curr = finishedProcesses -> head -> next;
+		Process* prev = finishedProcesses -> head;
+
+		while (curr) {
+			free(prev);
+			prev = curr;
+			curr = curr -> next;
+		}
+		free(prev);
+		}
+	free(finishedProcesses);
+	free(fifo1);
+	free(fifo2);
+	free(entryOrder);
+	free(sjf);
+
 	input_file_destroy(input_file);
 }

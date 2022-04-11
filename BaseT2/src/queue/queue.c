@@ -209,7 +209,7 @@ void updateProcesses(List* list, List* fifo1 ){
           removeProcess(list, process);
           addProcess(fifo1, newPriority);
           process -> sCounter =0;
-          // Agregarlo siempre a fifo1
+          printf("Salida  hacia fifo1, por envejecimiento\n");
           //remove de la lista actual 
         }
   }
