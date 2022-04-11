@@ -194,10 +194,16 @@ void showList(List* list){
   }
 }
 
-void updateList(List* fifo1, List* fifo2, List* sjf){
-  for(Process* nodo = fifo1->head; nodo  ; nodo = nodo -> next){
-        nodo -> sCounter++;
-
+void updateProcesses(List* list){
+  for(Process* process = list -> head; process  ; process = process -> next){
+        process -> sCounter++;
+        if (process -> state == 2) {
+          process -> waitCounter ++;
+        }
+        if (process -> waitCounter > process -> waitingDelay) {
+          process -> state = 0;
+          process -> waitCounter = 0;
+        }
   }
 
 
@@ -207,6 +213,7 @@ Process* processReadyForExecution(List* list) {
 
   for(Process *process = list -> head; process; process = process -> next){
     if (process -> state == 0) {
+      process -> priority = list -> priority;
       removeProcess(list, process);
       return process;
     }

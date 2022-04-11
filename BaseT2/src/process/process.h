@@ -6,7 +6,7 @@ typedef struct process Process;
 struct process {
     int pid;
     char* name[32];
-    int priority; // 1 top 
+    int priority; // si viene de fifo1: 0, fifo2: 1, sjf: 2 
     int state;   // READY (0), RUNNING (1), , WAITING(2) o FINISHED (3).
 
     int startTime;

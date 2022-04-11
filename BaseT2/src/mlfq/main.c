@@ -18,11 +18,11 @@ int main(int argc, char const *argv[])
 	//Crando colas
 	int Q = atoi(argv[3]);
 	printf("Q = %d\n", Q );
-	List* entryOrder = listInit(0, 0, Q); // Lista que almacena por startTime
-	List* finishedProcesses = listInit(0, 0, Q); // Lista que almacena por startTime
-	List* fifo1 = listInit(0, 2, Q);
+	List* entryOrder = listInit(0, 0, 0); // Lista que almacena por startTime
+	List* finishedProcesses = listInit(0, 0, 0); // Lista que almacena por startTime
+	List* fifo1 = listInit(0, 0, Q * 2);
 	List* fifo2 = listInit(0, 1, Q);
-	List* sjf = listInit(1, 0, Q);
+	List* sjf = listInit(1, 2, 0);
 
 	
 
@@ -51,7 +51,7 @@ int main(int argc, char const *argv[])
 	int cycleCounter = 0;
 	Process* processInCPU;
 
-	while (fifo1 -> head || fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU) {
+	while (fifo1 -> head || fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU != NULL) {
 		printf("\nCiclo: %d\n", cycleCounter);
 		
 		while (entryOrder -> head && entryOrder -> head -> startTime <= cycleCounter) {
@@ -59,7 +59,10 @@ int main(int argc, char const *argv[])
 			eraseHead(entryOrder);
 	 		addProcess(fifo1, enteringProcess);
 		}
-		showList(fifo1);
+		
+		updateProcesses(fifo1);
+		updateProcesses(fifo2);
+		updateProcesses(sjf);
 
 		if (!processInCPU) {
 			printf("No hay proceso\n");
@@ -73,17 +76,29 @@ int main(int argc, char const *argv[])
 			if (!processInCPU) {
 				printf("No hay proceso para ejecutar");
 			}
-			if (processInCPU) {
-				professInCPU -> cpuChoice ++;
+			if (processInCPU != NULL) {
+				processInCPU -> cpuChoice ++;
+				printf("Entra proceso\n");
 			}
 		}
 		if (processInCPU) {
 			processInCPU -> cpuCounter++;
 			if (processInCPU -> cpuCounter >= processInCPU -> cycles){
-				printf("proceso %d termino \n", processInCPU -> pid);
+				printf("Proceso %d termino \n", processInCPU -> pid);
 				addProcess(finishedProcesses, processInCPU);
-				showList(fifo1);
 				processInCPU = NULL; 
+			}
+			else if (processInCPU -> cpuCounter % processInCPU -> wait == 0){
+				printf("Proceso %d cede CPU \n", processInCPU -> pid);
+				processInCPU -> state = 2;
+				processInCPU -> waitCounter = 0;
+				if (processInCPU -> priority == 0 || processInCPU -> priority == 1) {
+					addProcess(fifo1, processInCPU);
+				}
+				else {
+					addProcess(fifo2, processInCPU);
+				}
+				processInCPU = NULL;
 			}
 		}
 		
