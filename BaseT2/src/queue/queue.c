@@ -152,17 +152,17 @@ void insertSortbyCyclesLeft(List* list, Process* new){
   if (list->head){
     for(Process* nodo = list->head; nodo ; nodo = nodo -> next){
 
-      if (compare < nodo -> startTime){
+      if (compare < (nodo -> cycles) - (nodo -> cpuCounter)){
         //Mejor que Head
         if (nodo -> pid == list -> head -> pid){
-          //printf("mejor que head\n");
+          printf("mejor que head\n");
           list -> head = new;
           nodo -> prev = new;
           new -> next = nodo;
           return;
         }
         else {
-          //printf("entremedio \n");
+          printf("entremedio \n");
           new -> next = nodo;
           Process* originalPrev = nodo -> prev;
           originalPrev -> next = new;
@@ -173,14 +173,14 @@ void insertSortbyCyclesLeft(List* list, Process* new){
 
       }
   }
-  //printf("a la cola\n");
+  printf("a la cola\n");
   Process* exTail = list -> tail;
   list -> tail = new;
   exTail -> next = new;
   new -> prev = exTail; 
   
   }else{
-    //printf("primer insrtado\n");
+    printf("primer insrtado\n");
     list -> head = new;
     list -> tail = new;
   }
@@ -190,7 +190,7 @@ void showList(List* list){
 
   printf("Imprimiendo Lista \n");
   for(Process *process = list -> head; process; process = process -> next){
-    printf( "pid = %d | startTime = %d \n", process->pid, process->startTime);
+    printf( "pid = %d | startTime = %d | cycles = %d | cpuCount = %d\n", process->pid, process->startTime, process->cycles, process->cpuCounter);
   }
 }
 

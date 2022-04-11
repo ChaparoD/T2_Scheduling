@@ -47,7 +47,15 @@ int main(int argc, char const *argv[])
 		Process* new = processInit(*name, processInfo[0], processInfo[1], processInfo[2], processInfo[3], processInfo[4], processInfo[5]);
 		insertSortbyStartTime(entryOrder, new);
 	}
-
+	showList(entryOrder);
+	while (entryOrder -> head){
+		Process *enteringProcess = entryOrder -> head;
+		eraseHead(entryOrder);
+		addProcess(sjf, enteringProcess);
+	}
+	showList(sjf);
+	
+	return 0;
 	int cycleCounter = 0;
 	Process* processInCPU;
 
