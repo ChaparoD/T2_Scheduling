@@ -17,7 +17,7 @@ List* listInit(int tipo, int prioridad, int Q)
 
 
 void addProcess(List* list, Process* new){
-    printf("(%d)\n", new->pid);
+    printf("(%d)\n", new->pid); //ACA SE CAE , NO DETECTA EL PROCESO.
     //si es SJF insertamos ; type = 1
     if (list -> type){
       insertSortbyCyclesLeft(list, new);
