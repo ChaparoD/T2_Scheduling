@@ -30,5 +30,3 @@ void insertSortbyCyclesLeft(List* list, Process* nodo);
 void showList(List* list);
 
 int excedesQuantum(Process* process, int Q);
-
-  

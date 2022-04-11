@@ -9,6 +9,7 @@ int main(int argc, char const *argv[])
 {
 	/*Lectura del input*/
 	char *file_name = (char *)argv[1];
+	char *output_name = (char *)argv[2];
 	InputFile *input_file = read_file(file_name);
 
 	/*Mostramos el archivo de input en consola*/
@@ -53,35 +54,7 @@ int main(int argc, char const *argv[])
 
 	while (fifo1 -> head || fifo2 -> head || sjf -> head || entryOrder -> head || processInCPU != NULL) {
 		printf("\nCiclo: %d\n", cycleCounter);
-		
-		while (entryOrder -> head && entryOrder -> head -> startTime <= cycleCounter) {
-			Process *enteringProcess = entryOrder -> head;
-			eraseHead(entryOrder);
-	 		addProcess(fifo1, enteringProcess);
-		}
-		
-		updateProcesses(fifo1);
-		updateProcesses(fifo2);
-		updateProcesses(sjf);
 
-		if (!processInCPU) {
-			printf("No hay proceso\n");
-			processInCPU = processReadyForExecution(fifo1);
-			if (!processInCPU) {
-				processInCPU = processReadyForExecution(fifo2);
-			}
-			if (!processInCPU) {
-				processInCPU = processReadyForExecution(sjf);
-			}
-			if (!processInCPU) {
-				printf("No hay proceso para ejecutar");
-			}
-			if (processInCPU != NULL) {
-				processInCPU -> cpuChoice ++;
-				processInCPU -> actualCpuCounter = 0;
-				printf("Entra proceso desde lista %d\n", processInCPU -> priority);
-			}
-		}
 		if (processInCPU) {
 			processInCPU -> cpuCounter++;
 			processInCPU -> actualCpuCounter++;
@@ -113,6 +86,36 @@ int main(int argc, char const *argv[])
 				processInCPU = NULL;
 			}
 		}
+
+		while (entryOrder -> head && entryOrder -> head -> startTime <= cycleCounter) {
+			Process *enteringProcess = entryOrder -> head;
+			eraseHead(entryOrder);
+	 		addProcess(fifo1, enteringProcess);
+		}
+		
+		updateProcesses(fifo1);
+		updateProcesses(fifo2);
+		updateProcesses(sjf);
+
+		if (!processInCPU) {
+			printf("No hay proceso\n");
+			processInCPU = processReadyForExecution(fifo1);
+			if (!processInCPU) {
+				processInCPU = processReadyForExecution(fifo2);
+			}
+			if (!processInCPU) {
+				processInCPU = processReadyForExecution(sjf);
+			}
+			if (!processInCPU) {
+				printf("No hay proceso para ejecutar");
+			}
+			if (processInCPU != NULL) {
+				processInCPU -> cpuChoice ++;
+				processInCPU -> actualCpuCounter = 0;
+				printf("Entra proceso desde lista %d\n", processInCPU -> priority);
+			}
+		}
+		
 		
 		
 		cycleCounter++;
@@ -124,16 +127,34 @@ int main(int argc, char const *argv[])
 	Iterar sobre las 3 colas
 		Actualizar S de procesos en colas no prioritarias.
 		El S se actualiza independiente de lo que pase? o desde que el proceso sale de la cola mas prioritaria
-		Si corresponde, pasar procesos en estado WAIT a Ready
+		Si corresponde, pasar procesos en estado WAIT a Ready DONE
 
 	Si hay un proceso en CPU revisarlo y actualizar valores.
 		Hay que saber desde que cola llego a ejecutarse para saber que hacer.
-		Revisar si cede la CPU. -> Se aumenta su prioridad. Si ya estaba en fifo1 se mantiene
-		Revisar si se acaba su quantum. -> Se baja de prioridad
+		Revisar si cede la CPU. -> Se aumenta su prioridad. Si ya estaba en fifo1 se mantiene DONE
+		Revisar si se acaba su quantum. -> Se baja de prioridad DONE
 
-	Si no hay proceso en CPU, asignar un proceso a ejecutar segun prioridad.
-		Se reincia quantum. Si es que aplica y en funcion de que cola venia.
+	Si no hay proceso en CPU, asignar un proceso a ejecutar segun prioridad. DONE
+		Se reincia quantum. Si es que aplica y en funcion de que cola venia. DONE
 	*/
+	
+	char sentence[1000];
 
+    // creating file pointer to work with files
+    FILE *fptr;
+
+    // opening file in writing mode
+    fptr = fopen(output_name, "w");
+
+    // exiting program 
+    if (fptr == NULL) {
+        printf("Error!");
+        exit(1);
+    }
+    
+	for(Process *process = finishedProcesses -> head; process; process = process -> next){
+		fprintf(fptr, "%s,%d,%d,%d\n", process->name, process->cpuChoice, process->cpuInterruptions, process->turnAroundTime);
+	}
+	fclose(fptr);
 	input_file_destroy(input_file);
 }
